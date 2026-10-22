@@ -219,7 +219,7 @@ export default function ProductionDashboard() {
       <section className="rounded-lg border border-sky-200 bg-[#eaf8fd] px-6 py-5 text-slate-900 shadow-sm dark:border-sky-900/60 dark:bg-slate-900 dark:text-white sm:px-7">
         <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#123D70] dark:text-blue-300">Toho Technology Indonesia</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#123D70] dark:text-blue-300">Dental Care</p>
             <h1 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white sm:text-[28px]">Warehouse Management System</h1>
           </div>
           <ProductionDatePicker className="max-w-[220px]" label="Operation Date" onChange={setDate} value={date} />

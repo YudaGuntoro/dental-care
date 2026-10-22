@@ -1,6 +1,6 @@
 # Dental Care
 
-Dental Care is a clinic management starter built from the local WMS-Toho template. The original GitHub repository is not changed. The active project remote is `https://github.com/YudaGuntoro/dental-care.git`.
+Dental Care is a clinic management application. The active project remote is `https://github.com/YudaGuntoro/dental-care.git`.
 
 ## Clinic modules
 

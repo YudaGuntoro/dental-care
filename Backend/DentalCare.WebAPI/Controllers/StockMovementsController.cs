@@ -145,7 +145,7 @@ public class StockMovementsController : ApiControllerBase
         var generatedAt = DateTime.Now;
 
         using var workbook = new XLWorkbook();
-        workbook.Properties.Author = "WMS-Toho";
+        workbook.Properties.Author = "Dental Care";
         workbook.Properties.Title = "Stock Opname";
         workbook.Properties.Subject = "Warehouse stock opname export";
         workbook.Properties.Created = generatedAt;
@@ -299,7 +299,7 @@ public class StockMovementsController : ApiControllerBase
         worksheet.Cell("A1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
         worksheet.Range("A4:K4").Merge();
-        worksheet.Cell("A4").Value = "WMS-Toho Warehouse Management System | Warehouse Operation";
+        worksheet.Cell("A4").Value = "Dental Care | Warehouse Operation";
         worksheet.Cell("A4").Style.Font.FontColor = slate;
         worksheet.Cell("A4").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         worksheet.Cell("A4").Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
@@ -453,7 +453,7 @@ public class StockMovementsController : ApiControllerBase
         worksheet.PageSetup.Margins.Right = 0.25;
         worksheet.PageSetup.FitToPages(1, 0);
         worksheet.PageSetup.CenterHorizontally = true;
-        worksheet.PageSetup.Header.Center.AddText("WMS-Toho Stock Opname");
+        worksheet.PageSetup.Header.Center.AddText("Dental Care Stock Opname");
         worksheet.PageSetup.Footer.Right.AddText("Page &P of &N");
     }
 

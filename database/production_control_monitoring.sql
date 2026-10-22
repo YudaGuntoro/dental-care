@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
 INSERT IGNORE INTO users
     (id, username, full_name, email, role, status, password_hash, password_salt)
 VALUES
-    (1, 'admin', 'WMS-Toho Administrator', 'admin@wms-toho.local', 'ADMIN', 'ACTIVE',
+    (1, 'admin', 'Dental Care Administrator', 'admin@dental-care.local', 'ADMIN', 'ACTIVE',
      'mV/QhZOhh7mvmWj0P1RgeXm3hZB1AkKHY5jfEcrC7PE=', 'Y21tcy1hZG1pbi1zYWx0LXYx');
 
 SOURCE database/locations.sql;

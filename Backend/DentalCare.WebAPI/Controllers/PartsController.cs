@@ -192,7 +192,7 @@ public class PartsController : ApiControllerBase
         }
         sheet.Range("A1:B25").Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
         sheet.Range("A1:B25").Style.Border.OutsideBorderColor = border;
-        sheet.Range("D1:G2").Merge().Value = "WMS-Toho  /  PART MASTER";
+        sheet.Range("D1:G2").Merge().Value = "Dental Care  /  PART MASTER";
         sheet.Range("D1:G2").Style.Fill.BackgroundColor = navy;
         sheet.Range("D1:G2").Style.Font.FontColor = XLColor.White;
         sheet.Range("D1:G2").Style.Font.Bold = true;
@@ -220,7 +220,7 @@ public class PartsController : ApiControllerBase
         sheet.PageSetup.PageOrientation = XLPageOrientation.Landscape;
         sheet.PageSetup.FitToPages(1, 1);
         sheet.PageSetup.PrintAreas.Add("A1:G25");
-        sheet.PageSetup.Header.Left.AddText("WMS-Toho | Part Master Import");
+        sheet.PageSetup.Header.Left.AddText("Dental Care | Part Master Import");
         var example = workbook.Worksheets.Add("Example");
         example.ShowGridLines = false;
         example.TabColor = XLColor.FromHtml("#94A3B8");

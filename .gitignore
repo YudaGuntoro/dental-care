@@ -40,8 +40,6 @@ MaintenanceApp/DatabaseMigratorTemp/
 run-*.log
 *.log
 local-mysql/
-/wms-toho/
-/.wms-toho-template-source/
 
 # OS
 .DS_Store

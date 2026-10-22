@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 
 // Run against a production server, optionally through Nginx:
-// node scripts/check-cache.mjs https://wms.toho.my.id
+// node scripts/check-cache.mjs https://your-dental-care-domain.example
 const origin = process.argv[2] || "http://localhost:3100";
 const pages = ["/", "/signin", "/parts", "/locations", "/customers", "/pic-cards", "/users", "/stock-in", "/stock-out", "/item-check"];
 
