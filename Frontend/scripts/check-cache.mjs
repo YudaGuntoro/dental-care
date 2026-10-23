@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 // Run against a production server, optionally through Nginx:
 // node scripts/check-cache.mjs https://your-dental-care-domain.example
 const origin = process.argv[2] || "http://localhost:3100";
-const pages = ["/", "/signin", "/parts", "/locations", "/customers", "/pic-cards", "/users", "/stock-in", "/stock-out", "/item-check"];
+const pages = ["/", "/signin", "/patients", "/appointments", "/users"];
 
 function assertUncached(response, path) {
   const cacheControl = response.headers.get("cache-control") || "";
@@ -14,18 +14,11 @@ function assertUncached(response, path) {
   assert.equal(response.headers.get("expires"), "0", `${path}: Expires`);
 }
 
-for (const path of [...pages, "/parts?search=cache-check", "/?_rsc=cache-check"]) {
+for (const path of [...pages, "/?_rsc=cache-check"]) {
   const response = await fetch(new URL(path, origin), { method: "HEAD", cache: "no-store" });
   assert.equal(response.status, 200, `${path}: HTTP ${response.status}`);
   assertUncached(response, path);
   console.log(`PASS HEAD ${path}: ${response.headers.get("cache-control")}`);
-}
-
-for (const path of ["/api/parts", "/api/stock-movements", "/api/parts/import-template"]) {
-  const response = await fetch(new URL(path, origin), { cache: "no-store" });
-  assert.equal(response.status, 401, `${path}: expected unauthenticated API response`);
-  assertUncached(response, path);
-  console.log(`PASS ${path}: uncached API authentication response`);
 }
 
 const html = await (await fetch(new URL("/signin", origin))).text();
