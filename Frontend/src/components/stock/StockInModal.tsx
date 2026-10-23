@@ -114,7 +114,7 @@ function PartSearchSelect({
             : selectedLabel || "Search and select a part"}
         </span>
         <svg
-          className={`ml-2 size-5 shrink-0 stroke-current text-gray-500 transition-transform ${
+          className={`ml-2 size-5 shrink-0 stroke-current text-gray-500 dark:text-gray-400 transition-transform ${
             isOpen ? "rotate-180" : ""
           }`}
           viewBox="0 0 20 20"

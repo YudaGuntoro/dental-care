@@ -18,7 +18,7 @@ function MetricCard({ accent, label, value, note }: { accent: string; label: str
       <span className={`absolute inset-x-0 top-0 h-1 ${accent}`} />
       <p className="text-xs font-semibold leading-snug text-slate-500 dark:text-slate-400 sm:text-sm">{label}</p>
       <p className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl">{value}</p>
-      <p className="mt-2 text-[11px] leading-snug text-slate-400 sm:text-xs">{note}</p>
+      <p className="mt-2 text-[11px] leading-snug text-slate-400 dark:text-slate-500 sm:text-xs">{note}</p>
     </div>
   );
 }
@@ -52,7 +52,7 @@ function ChartCard({
     <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-4">
         <h2 className="font-bold text-slate-900 dark:text-white">{title}</h2>
-        <p className="mt-1 text-xs text-slate-400">{subtitle}</p>
+        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{subtitle}</p>
       </div>
       {children}
     </section>
@@ -103,11 +103,11 @@ function TopPartsList({ stockIn, stockOut }: { stockIn: StockMovement[]; stockOu
         <div className="flex items-center justify-between rounded-md bg-slate-50 px-4 py-3 dark:bg-slate-800" key={item.label}>
           <div className="min-w-0">
             <p className="truncate text-sm font-bold text-slate-800 dark:text-white">{item.label}</p>
-            <p className="mt-1 text-xs text-slate-400">Rank #{index + 1}</p>
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Rank #{index + 1}</p>
           </div>
           <span className="ml-3 text-sm font-black text-[#184F8F] dark:text-blue-300">{item.value.toLocaleString("en-US")}</span>
         </div>
-      )) : <p className="py-16 text-center text-sm text-slate-400">No movement data available.</p>}
+      )) : <p className="py-16 text-center text-sm text-slate-400 dark:text-slate-500">No movement data available.</p>}
     </div>
   );
 }
@@ -130,7 +130,7 @@ function LastStockTable({
   return (
     <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4 dark:border-slate-800">
-        <div><h2 className="font-bold text-slate-900 dark:text-white">{title}</h2><p className="mt-1 text-xs text-slate-400">Latest 10 warehouse items</p></div>
+        <div><h2 className="font-bold text-slate-900 dark:text-white">{title}</h2><p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Latest 10 warehouse items</p></div>
         <Link
           aria-label={type === "IN" ? "Open Stock In" : "Open Stock Out"}
           className="flex size-9 shrink-0 items-center justify-center rounded-md border border-[#184F8F]/20 text-[#184F8F] transition hover:bg-[#184F8F]/5 hover:text-[#123D70] dark:border-blue-300/20 dark:text-blue-300"
@@ -141,7 +141,7 @@ function LastStockTable({
         </Link>
       </div>
       <div>
-        <div className="space-y-2 p-3 md:hidden">{items.map((item) => <article key={item.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate text-sm font-bold text-slate-900 dark:text-white">{item.part_number}</p><p className="truncate text-xs text-slate-500">{item.part_name}</p></div><span className="shrink-0 text-sm font-black text-[#184F8F] dark:text-blue-300">{item.quantity.toLocaleString("en-US")}</span></div><div className="mt-2 flex items-center justify-between gap-2 border-t border-slate-100 pt-2 text-xs dark:border-slate-800"><span className="min-w-0 truncate font-medium text-slate-600 dark:text-slate-300">{item.location}{type === "OUT" && item.customer_name ? ` · ${item.customer_name}` : ""}</span><span className="shrink-0 text-slate-500">{formatDateTime(item.timestamp)}</span></div></article>)}{!loading && !items.length ? <p className="py-8 text-center text-sm text-slate-400">{emptyMessage}</p> : null}</div>
+        <div className="space-y-2 p-3 md:hidden">{items.map((item) => <article key={item.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate text-sm font-bold text-slate-900 dark:text-white">{item.part_number}</p><p className="truncate text-xs text-slate-500 dark:text-slate-400">{item.part_name}</p></div><span className="shrink-0 text-sm font-black text-[#184F8F] dark:text-blue-300">{item.quantity.toLocaleString("en-US")}</span></div><div className="mt-2 flex items-center justify-between gap-2 border-t border-slate-100 pt-2 text-xs dark:border-slate-800"><span className="min-w-0 truncate font-medium text-slate-600 dark:text-slate-300">{item.location}{type === "OUT" && item.customer_name ? ` · ${item.customer_name}` : ""}</span><span className="shrink-0 text-slate-500 dark:text-slate-400">{formatDateTime(item.timestamp)}</span></div></article>)}{!loading && !items.length ? <p className="py-8 text-center text-sm text-slate-400 dark:text-slate-500">{emptyMessage}</p> : null}</div>
         <div className="hidden overflow-x-auto md:block"><table className="w-full table-fixed text-left">
           <colgroup>
             <col className="w-[42%]" />
@@ -162,19 +162,19 @@ function LastStockTable({
               <tr className="text-xs xl:text-sm" key={item.id}>
                 <td className="px-4 py-4 align-top">
                   <p className="truncate font-bold text-slate-800 dark:text-white">{item.part_number}</p>
-                  <p className="mt-1 truncate text-xs text-slate-400">{item.part_name}</p>
+                  <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">{item.part_name}</p>
                 </td>
                 <td className="px-4 py-4 align-top">
                   <p className="truncate font-semibold text-slate-700 dark:text-slate-200">{item.location}</p>
-                  {type === "OUT" ? <p className="mt-1 truncate text-xs text-slate-400">{item.customer_name || "-"}</p> : null}
+                  {type === "OUT" ? <p className="mt-1 truncate text-xs text-slate-400 dark:text-slate-500">{item.customer_name || "-"}</p> : null}
                 </td>
                 <td className="px-4 py-4 text-right align-top"><p className="font-black text-slate-900 dark:text-white">{item.quantity.toLocaleString("en-US")}</p></td>
-                <td className="px-4 py-4 align-top text-xs font-semibold text-slate-500">{formatDateTime(item.timestamp)}</td>
+                <td className="px-4 py-4 align-top text-xs font-semibold text-slate-500 dark:text-slate-400">{formatDateTime(item.timestamp)}</td>
               </tr>
             ))}
           </tbody>
         </table></div>
-        {!loading && !items.length ? <p className="px-5 py-12 text-center text-sm text-slate-400">{emptyMessage}</p> : null}
+        {!loading && !items.length ? <p className="px-5 py-12 text-center text-sm text-slate-400 dark:text-slate-500">{emptyMessage}</p> : null}
       </div>
     </section>
   );

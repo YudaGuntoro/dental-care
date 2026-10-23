@@ -32,7 +32,7 @@ export default function YkkBrand({
           <p className={`font-extrabold leading-tight ${inverted ? "text-white" : "text-[#0f766e]"} ${titleSize}`}>
             Dental Care
           </p>
-          <p className={`font-medium ${inverted ? "text-white/75" : "text-slate-500"} ${subtitleSize}`}>Clinic Management</p>
+          <p className={`font-medium ${inverted ? "text-white/75" : "text-slate-500 dark:text-slate-400"} ${subtitleSize}`}>Clinic Management</p>
         </div>
       ) : null}
     </div>

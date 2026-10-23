@@ -44,7 +44,7 @@ const baseColumns: DataTableColumn<Location>[] = [
     key: "is_active",
     header: "Status",
     render: (value) => (
-      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>
+      <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500 dark:text-slate-400"}`}>
         {value ? "ACTIVE" : "INACTIVE"}
       </span>
     ),

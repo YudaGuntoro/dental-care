@@ -46,7 +46,7 @@ export default function CustomerTable() {
 
   const columns = useMemo<DataTableColumn<Customer>[]>(() => [
     { key: "customer_name", header: "Customer Name", sortable: true },
-    { key: "is_active", header: "Status", render: (value) => <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500"}`}>{value ? "ACTIVE" : "INACTIVE"}</span> },
+    { key: "is_active", header: "Status", render: (value) => <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${value ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-500 dark:text-slate-400"}`}>{value ? "ACTIVE" : "INACTIVE"}</span> },
     { key: "created_at", header: "Created At", render: (value) => typeof value === "string" ? new Date(value).toLocaleDateString("en-GB") : "-" },
     { key: "action", header: "Action", align: "center", render: (_, row) => <RowActions onEdit={() => { setSelected(row); setIsModalOpen(true); }} onDelete={() => setToDelete(row)} /> },
   ], []);

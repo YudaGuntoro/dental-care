@@ -304,7 +304,7 @@ export default function DataTable<T extends object>({
                   : formatCellValue(value);
                 return (
                   <div className="min-w-0" key={column.key}>
-                    <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">{column.header}</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-400">{column.header}</p>
                     <div className="mt-0.5 break-words text-sm font-semibold text-gray-800 dark:text-gray-100">{renderedValue}</div>
                   </div>
                 );
@@ -314,7 +314,7 @@ export default function DataTable<T extends object>({
                   const value = getColumnValue(row, column);
                   const renderedValue = column.render ? column.render(value, row, index) : formatCellValue(value);
                   return <div className="min-w-0" key={column.key}>
-                    <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-gray-400">{column.header}</p>
+                    <p className="truncate text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-400">{column.header}</p>
                     <div className="break-words text-xs text-gray-700 dark:text-gray-300">{renderedValue}</div>
                   </div>;
                 })}
@@ -323,7 +323,7 @@ export default function DataTable<T extends object>({
                 const value = getColumnValue(row, column);
                 const renderedValue = column.render ? column.render(value, row, index) : formatCellValue(value);
                 return <div className="mt-2 flex items-center justify-between border-t border-gray-100 pt-1 dark:border-white/[0.05]" key={column.key}>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400">{column.header}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-400 dark:text-gray-400">{column.header}</p>
                   <div className="text-sm text-gray-700 dark:text-gray-300">{renderedValue}</div>
                 </div>;
               })}

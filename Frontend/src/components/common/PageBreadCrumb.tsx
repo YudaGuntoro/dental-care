@@ -14,7 +14,7 @@ const isPathMatch = (itemPath: string, pathname: string) =>
   pathname === itemPath || pathname.startsWith(`${itemPath}/`);
 
 const BreadcrumbSeparator = () => (
-  <li className="flex items-center text-gray-400">
+  <li className="flex items-center text-gray-400 dark:text-gray-400">
     <svg
       className="stroke-current"
       width="14"

@@ -246,15 +246,15 @@ function AutocompleteInput({
         value={value}
       />
       <button type="button" aria-label={`Show ${placeholder} options`} aria-expanded={isOpen}
-        className="absolute right-0 top-0 flex h-11 w-9 items-center justify-center text-slate-400"
+        className="absolute right-0 top-0 flex h-11 w-9 items-center justify-center text-slate-400 dark:text-slate-500"
         onMouseDown={(event) => event.preventDefault()}
         onClick={() => { inputRef.current?.focus(); setIsOpen(!isOpen); setActiveIndex(-1); }}>
         <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6" /></svg>
       </button>
       {isOpen && (visibleOptions.length > 0 || loading || emptyMessage) ? (
         <div id={listId} role="listbox" aria-label={placeholder} className={dropdownClass}>
-          {loading ? <p role="status" className="px-3 py-2 text-sm text-slate-500">Searching master data...</p> : null}
-          {!loading && visibleOptions.length === 0 && emptyMessage ? <p role="status" className="px-3 py-2 text-sm text-slate-500">{emptyMessage}</p> : null}
+          {loading ? <p role="status" className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">Searching master data...</p> : null}
+          {!loading && visibleOptions.length === 0 && emptyMessage ? <p role="status" className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400">{emptyMessage}</p> : null}
           {visibleOptions.map((option, index) => (
             <button
               id={`${listId}-${index}`}
@@ -268,7 +268,7 @@ function AutocompleteInput({
               type="button"
             >
               <span className="truncate font-medium">{option.value}</span>
-              {option.label ? <span className="mt-0.5 truncate text-xs text-slate-400">{option.label}</span> : null}
+              {option.label ? <span className="mt-0.5 truncate text-xs text-slate-400 dark:text-slate-500">{option.label}</span> : null}
             </button>
           ))}
         </div>
@@ -397,17 +397,17 @@ function QrModal({
               {qrDataUrl ? (
                 <Image alt={`QR ${item.part_number}`} className="mx-auto size-[260px]" height={260} src={qrDataUrl} width={260} />
               ) : (
-                <div className="py-28 text-sm text-slate-400">Generating QR...</div>
+                <div className="py-28 text-sm text-slate-400 dark:text-slate-500">Generating QR...</div>
               )}
             </div>
 
             <div className="mt-4 divide-y divide-slate-100 rounded-lg border border-slate-200 text-sm dark:divide-slate-800 dark:border-slate-700">
               <div className="flex items-start justify-between gap-4 px-4 py-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Location</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Location</span>
                 <span className="break-words text-right font-bold text-slate-900 dark:text-white">{item.location}</span>
               </div>
               <div className="flex items-start justify-between gap-4 px-4 py-3">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Qty</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Qty</span>
                 <span className="font-bold text-slate-900 dark:text-white">{item.quantity.toLocaleString("en-US")}</span>
               </div>
             </div>
@@ -671,7 +671,7 @@ export default function StockMovementPage({ type }: StockMovementPageProps) {
         <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-4 dark:border-slate-800 sm:px-5 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="font-bold text-slate-900 dark:text-white">{title} History</h2>
-            <p className="mt-1 text-xs text-slate-400">Latest 50 records</p>
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Latest 50 records</p>
           </div>
           <div className="flex flex-col gap-2 md:flex-row md:items-center">
             {type === "IN" ? (
@@ -719,19 +719,19 @@ export default function StockMovementPage({ type }: StockMovementPageProps) {
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
                 <div className="rounded-md bg-slate-50 p-2 dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">Location</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">Location</p>
                   <p className="mt-1 break-words font-semibold text-slate-700 dark:text-slate-200">{item.location}</p>
                 </div>
                 <div className="rounded-md bg-slate-50 p-2 text-right dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">Qty</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">Qty</p>
                   <p className="mt-1 font-semibold text-slate-700 dark:text-slate-200">{item.quantity.toLocaleString("en-US")}</p>
                 </div>
                 <div className="col-span-2 rounded-md bg-slate-50 p-2 dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">Customer</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">Customer</p>
                   <p className="mt-1 break-words font-semibold text-slate-700 dark:text-slate-200">{item.customer_name || "-"}</p>
                 </div>
                 <div className="col-span-2 rounded-md bg-slate-50 p-2 dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">TimeStamp</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">TimeStamp</p>
                   <p className="mt-1 font-semibold text-slate-700 dark:text-slate-200">{formatDate(item.timestamp)}</p>
                 </div>
               </div>
@@ -748,8 +748,8 @@ export default function StockMovementPage({ type }: StockMovementPageProps) {
               </div>
             </article>
           ))}
-          {!loading && !items.length ? <p className="py-8 text-center text-sm text-slate-400">No {title.toLowerCase()} records found.</p> : null}
-          {loading ? <p className="py-8 text-center text-sm text-slate-400">Loading...</p> : null}
+          {!loading && !items.length ? <p className="py-8 text-center text-sm text-slate-400 dark:text-slate-500">No {title.toLowerCase()} records found.</p> : null}
+          {loading ? <p className="py-8 text-center text-sm text-slate-400 dark:text-slate-500">Loading...</p> : null}
         </div>
         <div className="hidden overflow-x-auto md:block">
           <table className={`w-full text-left text-sm ${type === "IN" ? "min-w-[1120px]" : "min-w-[940px]"}`}>
@@ -813,8 +813,8 @@ export default function StockMovementPage({ type }: StockMovementPageProps) {
               ))}
             </tbody>
           </table>
-          {!loading && !items.length ? <p className="px-5 py-12 text-center text-sm text-slate-400">No {title.toLowerCase()} records found.</p> : null}
-          {loading ? <p className="px-5 py-12 text-center text-sm text-slate-400">Loading...</p> : null}
+          {!loading && !items.length ? <p className="px-5 py-12 text-center text-sm text-slate-400 dark:text-slate-500">No {title.toLowerCase()} records found.</p> : null}
+          {loading ? <p className="px-5 py-12 text-center text-sm text-slate-400 dark:text-slate-500">Loading...</p> : null}
         </div>
       </section>
 

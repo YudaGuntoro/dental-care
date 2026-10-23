@@ -86,7 +86,7 @@ export default function MonthlyTarget() {
           </div>
           <div className="relative inline-block">
             <button onClick={toggleDropdown} className="dropdown-toggle">
-              <MoreDotIcon className="text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
+              <MoreDotIcon className="text-gray-400 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" />
             </button>
             <Dropdown
               isOpen={isOpen}
@@ -124,7 +124,7 @@ export default function MonthlyTarget() {
             +10%
           </span>
         </div>
-        <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 sm:text-base">
+        <p className="mx-auto mt-10 w-full max-w-[380px] text-center text-sm text-gray-500 dark:text-gray-400 sm:text-base">
           You earn $3287 today, it&apos;s higher than last month. Keep up your
           good work!
         </p>

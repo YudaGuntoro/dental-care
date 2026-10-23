@@ -164,7 +164,7 @@ export default function ItemCheckPage() {
       <section className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="border-b border-slate-100 px-4 py-4 dark:border-slate-800 sm:px-5">
           <h2 className="font-bold text-slate-900 dark:text-white">Available Lots & Locations</h2>
-          <p className="mt-1 text-xs text-slate-400">Stock In minus Stock Out, grouped by Part Name, Lot, and Location.</p>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">Stock In minus Stock Out, grouped by Part Name, Lot, and Location.</p>
         </div>
         <div className="space-y-3 p-4 md:hidden">
           {items.map((item) => (
@@ -173,29 +173,29 @@ export default function ItemCheckPage() {
               <p className="mt-1 break-words text-sm font-semibold text-slate-600 dark:text-slate-300">{item.part_number}</p>
               <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
                 <div className="rounded-md bg-slate-50 p-2 dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">Location</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">Location</p>
                   <p className="mt-1 break-words font-semibold text-slate-700 dark:text-slate-200">{item.location}</p>
                 </div>
                 <div className="rounded-md bg-slate-50 p-2 text-right dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">Qty Sisa</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">Qty Sisa</p>
                   <p className="mt-1 font-black text-slate-900 dark:text-white">{item.remaining_qty.toLocaleString("en-US")}</p>
                 </div>
                 <div className="rounded-md bg-slate-50 p-2 text-right dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">Stock In</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">Stock In</p>
                   <p className="mt-1 font-semibold text-slate-700 dark:text-slate-200">{item.stock_in_qty.toLocaleString("en-US")}</p>
                 </div>
                 <div className="rounded-md bg-slate-50 p-2 text-right dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">Stock Out</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">Stock Out</p>
                   <p className="mt-1 font-semibold text-slate-700 dark:text-slate-200">{item.stock_out_qty.toLocaleString("en-US")}</p>
                 </div>
                 <div className="col-span-2 rounded-md bg-slate-50 p-2 dark:bg-slate-800">
-                  <p className="font-bold uppercase text-slate-400">Last TimeStamp</p>
+                  <p className="font-bold uppercase text-slate-400 dark:text-slate-500">Last TimeStamp</p>
                   <p className="mt-1 font-semibold text-slate-700 dark:text-slate-200">{formatDate(item.last_timestamp)}</p>
                 </div>
               </div>
             </article>
           ))}
-          {!items.length ? <p className="py-8 text-center text-sm text-slate-400">Scan Stock In QR or search Part Name to check available stock.</p> : null}
+          {!items.length ? <p className="py-8 text-center text-sm text-slate-400 dark:text-slate-500">Scan Stock In QR or search Part Name to check available stock.</p> : null}
         </div>
         <div className="hidden overflow-x-auto md:block">
           <table className="w-full min-w-[880px] text-left text-sm">
@@ -224,7 +224,7 @@ export default function ItemCheckPage() {
               ))}
             </tbody>
           </table>
-          {!items.length ? <p className="px-5 py-12 text-center text-sm text-slate-400">Scan Stock In QR or search Part Name to check available stock.</p> : null}
+          {!items.length ? <p className="px-5 py-12 text-center text-sm text-slate-400 dark:text-slate-500">Scan Stock In QR or search Part Name to check available stock.</p> : null}
         </div>
       </section>
     </div>
