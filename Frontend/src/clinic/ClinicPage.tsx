@@ -5,6 +5,8 @@ import Link from "next/link";
 import { apiDelete, apiGet, apiPost, apiPut } from "@/lib/api";
 import RowActions from "@/components/common/RowActions";
 import DatePicker from "@/components/form/date-picker";
+import SearchableSelect from "@/components/form/SearchableSelect";
+import { useToast } from "@/context/ToastContext";
 
 type Patient = { id: number; fullName: string; phone?: string; email?: string; address?: string; emergencyContact?: string; birthDate?: string; gender?: string; allergies?: string; medicalNotes?: string };
 type Appointment = { id: number; patientId: number; doctorId?: number; treatmentId?: number; patient_name: string; doctor_name?: string; treatment_name?: string; scheduledAt: string; status: string; notes?: string; diagnosis?: string; procedureNotes?: string; prescription?: string };
@@ -23,8 +25,19 @@ const labels: Record<PageKind, { title: string; description: string; endpoint: s
 
 const fieldClass = "w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none focus:border-teal-600 dark:border-slate-700 dark:bg-slate-900 dark:text-white";
 const money = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
+const appointmentDateRange = (date: string) => {
+  const from = new Date(`${date}T00:00:00`);
+  const to = new Date(from);
+  to.setDate(to.getDate() + 1);
+  return `?from=${encodeURIComponent(from.toISOString())}&to=${encodeURIComponent(to.toISOString())}`;
+};
+const localDateValue = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+};
 
 export default function ClinicPage({ kind }: { kind: PageKind }) {
+  const toast = useToast();
   const meta = labels[kind];
   const [rows, setRows] = useState<Array<Patient | Doctor | Appointment | Treatment | Payment>>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -35,6 +48,7 @@ export default function ClinicPage({ kind }: { kind: PageKind }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [search, setSearch] = useState("");
+  const [appointmentDate, setAppointmentDate] = useState(localDateValue);
   const [showForm, setShowForm] = useState(false);
   const [formDirty, setFormDirty] = useState(false);
   const useCreateModal = true;
@@ -46,8 +60,8 @@ export default function ClinicPage({ kind }: { kind: PageKind }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [showForm, formDirty]);
 
-  function closeForm() {
-    if (formDirty && !window.confirm("Data yang sudah diisi belum disimpan. Tutup formulir?")) return;
+  async function closeForm() {
+    if (formDirty && !await toast.confirm({ message: "Data yang sudah diisi belum disimpan. Tutup formulir dan buang perubahan?" })) return;
     setFormDirty(false);
     setShowForm(false);
   }
@@ -56,7 +70,8 @@ export default function ClinicPage({ kind }: { kind: PageKind }) {
     setLoading(true);
     setError("");
     try {
-      const data = await apiGet<Array<Patient | Doctor | Appointment | Treatment | Payment>>(meta.endpoint);
+      const endpoint = kind === "appointments" && appointmentDate ? `${meta.endpoint}${appointmentDateRange(appointmentDate)}` : meta.endpoint;
+      const data = await apiGet<Array<Patient | Doctor | Appointment | Treatment | Payment>>(endpoint);
       setRows(data ?? []);
       if (kind !== "patients" && kind !== "doctors" && kind !== "treatments") setPatients(await apiGet<Patient[]>(labels.patients.endpoint));
       if (kind === "appointments") setTreatments(await apiGet<Treatment[]>(labels.treatments.endpoint));
@@ -66,7 +81,7 @@ export default function ClinicPage({ kind }: { kind: PageKind }) {
     } finally {
       setLoading(false);
     }
-  }, [kind, meta.endpoint]);
+  }, [appointmentDate, kind, meta.endpoint]);
 
   useEffect(() => { void refresh(); }, [refresh]);
 
@@ -109,7 +124,7 @@ export default function ClinicPage({ kind }: { kind: PageKind }) {
   }
 
   async function removeRow(id: number) {
-    if (!window.confirm("Hapus data ini?")) return;
+    if (!await toast.confirm({ title: "Hapus data?", message: "Data yang dihapus tidak dapat dipulihkan.", confirmText: "Hapus", cancelText: "Batal" })) return;
     const endpoint = kind === "patients" ? "patients" : kind === "doctors" ? "doctors" : kind === "treatments" ? "treatments" : kind === "appointments" ? "appointments" : "payments";
     try { await apiDelete(`/api/clinic/${endpoint}/${id}`); await refresh(); } catch (err) { setError(err instanceof Error ? err.message : "Data tidak dapat dihapus."); }
   }
@@ -117,6 +132,7 @@ export default function ClinicPage({ kind }: { kind: PageKind }) {
   const filteredRows = rows.filter((row) => JSON.stringify(row).toLowerCase().includes(search.toLowerCase()));
   return <div className="space-y-6">
     <header><p className="text-xs font-bold uppercase tracking-[0.2em] text-teal-700 dark:text-teal-300">Dental Care</p><h1 className="mt-2 text-2xl font-black text-slate-900 dark:text-white">{meta.title}</h1><p className="mt-1 text-sm text-slate-500 dark:text-slate-300">{meta.description}</p></header>
+    {kind === "appointments" && <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900"><DatePicker id="appointment-date-filter" label="Filter tanggal" name="appointmentDateFilter" value={appointmentDate} onValueChange={setAppointmentDate} dateFormat="Y-m-d" altInput altFormat="d/m/Y" placeholder="Pilih tanggal" className={`${fieldClass} w-full sm:max-w-64`} /><button type="button" onClick={() => setAppointmentDate("")} disabled={!appointmentDate} className="min-h-11 rounded-xl border border-slate-200 px-4 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">Semua tanggal</button><p className="pb-2 text-xs text-slate-500 dark:text-slate-400">Pilih tanggal untuk melihat janji temu dan antrean hari tersebut.</p></div>}
     <div className="flex min-w-0 flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:flex-row sm:items-center sm:justify-between sm:p-4"><div className="flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-300"><span>Tampilkan</span><select className="rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-sm dark:border-slate-700 dark:bg-slate-900"><option>10</option><option>25</option><option>50</option></select><span>data</span><button type="button" onClick={() => setShowForm(true)} className="min-h-10 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800">Tambah</button></div><label className="flex w-full min-w-0 items-center gap-2 text-sm text-slate-600 dark:text-slate-300 sm:w-auto">Cari<input value={search} onChange={(event) => setSearch(event.target.value)} className={`${fieldClass} min-w-0 w-full sm:w-64`} placeholder={`Cari ${meta.title.toLowerCase()}...`} /></label></div>
     {useCreateModal && showForm && <button type="button" aria-label="Tutup formulir" onClick={closeForm} className="fixed inset-0 z-40 h-full w-full cursor-default bg-slate-950/30 backdrop-blur-[2px]" />}
     <div className={`grid gap-6 ${!useCreateModal || showForm ? "xl:grid-cols-[minmax(320px,0.78fr)_minmax(0,1.65fr)]" : "xl:grid-cols-1"}`}>
@@ -138,9 +154,9 @@ export default function ClinicPage({ kind }: { kind: PageKind }) {
           <fieldset className="space-y-3 rounded-xl border border-slate-200 p-3 dark:border-slate-700"><legend className="px-1 text-xs font-semibold text-slate-600 dark:text-slate-300">Jam praktik mingguan</legend><div className="grid grid-cols-4 gap-2 text-xs sm:grid-cols-7">{[[1,"Senin"],[2,"Selasa"],[3,"Rabu"],[4,"Kamis"],[5,"Jumat"],[6,"Sabtu"],[7,"Minggu"]].map(([day, label]) => <label key={day} className="flex items-center gap-1.5"><input type="checkbox" name="practiceDays" value={day} className="rounded border-slate-300 text-teal-700 focus:ring-teal-600" />{label}</label>)}</div><div className="grid grid-cols-2 gap-3"><label className="text-xs font-medium text-slate-500 dark:text-slate-400">Mulai<input className={`${fieldClass} mt-1`} name="startTime" type="time" defaultValue="09:00" /></label><label className="text-xs font-medium text-slate-500 dark:text-slate-400">Selesai<input className={`${fieldClass} mt-1`} name="endTime" type="time" defaultValue="16:00" /></label></div><p className="text-xs text-slate-500 dark:text-slate-400">Pilih hari yang berlaku untuk jam di atas. Hari tanpa centang tidak dijadwalkan.</p></fieldset>
         </>}
         {kind === "appointments" && <>
-          <select className={fieldClass} name="patientId" required defaultValue=""><option value="" disabled>Pilih pasien</option>{patients.map((patient) => <option key={patient.id} value={patient.id}>{patient.fullName}</option>)}</select>
-          <select className={fieldClass} name="doctorId" defaultValue=""><option value="">Pilih dokter (opsional)</option>{doctors.map((doctor) => <option key={doctor.id} value={doctor.id}>{doctor.fullName}{doctor.specialty ? ` · ${doctor.specialty}` : ""}</option>)}</select>
-          <select className={fieldClass} name="treatmentId" defaultValue=""><option value="">Pilih perawatan (opsional)</option>{treatments.map((treatment) => <option key={treatment.id} value={treatment.id}>{treatment.name} · {money(treatment.price)}</option>)}</select>
+          <SearchableSelect name="patientId" options={patients.map((patient) => ({ value: patient.id, label: patient.fullName, description: [patient.phone, patient.address].filter(Boolean).join(" · ") }))} placeholder="Pilih atau ketik nama pasien" required className={fieldClass} emptyMessage="Nama pasien belum terdaftar. Tambahkan melalui Data Utama → Daftar Pasien." />
+          <SearchableSelect name="doctorId" options={doctors.map((doctor) => ({ value: doctor.id, label: doctor.fullName, description: doctor.specialty || doctor.practiceSchedule || "Dokter gigi" }))} placeholder="Pilih dokter (opsional)" className={fieldClass} />
+          <SearchableSelect name="treatmentId" options={treatments.map((treatment) => ({ value: treatment.id, label: treatment.name, description: `${money(treatment.price)} · ${treatment.durationMinutes} menit` }))} placeholder="Pilih perawatan (opsional)" className={fieldClass} />
           <DatePicker id="appointment-scheduled-at" name="scheduledAt" enableTime dateFormat="Y-m-d H:i" altInput altFormat="d/m/Y H:i" placeholder="Pilih tanggal dan waktu" className={fieldClass} required />
           <textarea className={fieldClass} name="notes" placeholder="Anamnesa / keluhan pasien" rows={3} />
         </>}
@@ -150,12 +166,12 @@ export default function ClinicPage({ kind }: { kind: PageKind }) {
           <div className="grid gap-3 sm:grid-cols-2"><input className={fieldClass} name="price" type="number" min="0" step="1000" placeholder="Harga (Rp)" required /><input className={fieldClass} name="durationMinutes" type="number" min="1" defaultValue="30" placeholder="Menit" required /></div>
         </>}
         {kind === "payments" && <>
-          <select className={fieldClass} name="patientId" required defaultValue=""><option value="" disabled>Pilih pasien</option>{patients.map((patient) => <option key={patient.id} value={patient.id}>{patient.fullName}</option>)}</select>
+          <SearchableSelect name="patientId" options={patients.map((patient) => ({ value: patient.id, label: patient.fullName, description: [patient.phone, patient.address].filter(Boolean).join(" · ") }))} placeholder="Pilih atau ketik nama pasien" required className={fieldClass} emptyMessage="Nama pasien belum terdaftar. Tambahkan melalui Data Utama → Daftar Pasien." />
           <input className={fieldClass} name="amount" type="number" min="1" step="1000" placeholder="Jumlah (Rp)" required />
-          <select className={fieldClass} name="method" defaultValue="Cash"><option>Tunai</option><option>Kartu</option><option>Transfer bank</option><option>Dompet digital</option></select>
+          <label className="grid gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300">Metode pembayaran<select className={fieldClass} name="method" defaultValue="Tunai"><option value="Tunai">Tunai</option><option value="Kartu">Kartu</option><option value="Transfer bank">Transfer bank</option><option value="Dompet digital">Dompet digital</option><option value="QRIS">QRIS</option></select></label>
         </>}
         {error && <p role="alert" className="text-sm text-red-600">{error}</p>}{success && <p role="status" className="text-sm text-emerald-700">{success}</p>}
-        <div className="flex gap-2"><button disabled={saving} className="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60">{saving ? "Menyimpan…" : "Simpan"}</button>{useCreateModal && <button type="button" onClick={closeForm} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500 dark:text-slate-400 dark:border-slate-700">Batal</button>}</div>
+        <div className="flex justify-end gap-2"><button disabled={saving} className="rounded-xl bg-teal-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-teal-800 disabled:opacity-60">{saving ? "Menyimpan…" : "Simpan"}</button>{useCreateModal && <button type="button" onClick={closeForm} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-500 dark:text-slate-400 dark:border-slate-700">Batal</button>}</div>
       </form>
       <section className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="border-b border-slate-100 px-5 py-4 dark:border-slate-800"><h2 className="font-bold text-slate-900 dark:text-white">Daftar {meta.title.toLowerCase()}</h2><p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Data terbaru yang tersimpan di klinik</p></div>

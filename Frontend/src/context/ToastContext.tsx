@@ -18,9 +18,19 @@ type ToastInput = {
   duration?: number;
 };
 
+type ConfirmToastInput = {
+  title?: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+};
+
 type Toast = ToastInput & {
   id: number;
   type: ToastType;
+  confirmText?: string;
+  cancelText?: string;
+  resolveConfirmation?: (confirmed: boolean) => void;
 };
 
 type ToastContextType = {
@@ -29,6 +39,7 @@ type ToastContextType = {
   removeToast: (id: number) => void;
   success: (toast: ToastInput) => void;
   warning: (toast: ToastInput) => void;
+  confirm: (toast: ConfirmToastInput) => Promise<boolean>;
 };
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -57,6 +68,8 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   const nextId = useRef(1);
   const activeKeys = useRef(new Map<string, number>());
   const timers = useRef(new Map<number, ReturnType<typeof setTimeout>>());
+  const confirmations = useRef(new Map<number, (confirmed: boolean) => void>());
+  const activeConfirmation = useRef<{ id: number; promise: Promise<boolean>; resolve: (confirmed: boolean) => void } | null>(null);
 
   useEffect(() => {
     const activeTimers = timers.current;
@@ -70,11 +83,43 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     const timer = timers.current.get(id);
     if (timer) clearTimeout(timer);
     timers.current.delete(id);
+    const resolveConfirmation = confirmations.current.get(id);
+    confirmations.current.delete(id);
+    if (activeConfirmation.current?.id === id) activeConfirmation.current = null;
+    resolveConfirmation?.(false);
     activeKeys.current.forEach((activeId, key) => {
       if (activeId === id) activeKeys.current.delete(key);
     });
     setToasts((current) => current.filter((toast) => toast.id !== id));
   }, []);
+
+  const confirm = useCallback((toast: ConfirmToastInput) => {
+    if (activeConfirmation.current) return activeConfirmation.current.promise;
+    const id = nextId.current++;
+    let resolvePromise!: (confirmed: boolean) => void;
+    const promise = new Promise<boolean>((resolve) => { resolvePromise = resolve; });
+    activeConfirmation.current = { id, promise, resolve: resolvePromise };
+    confirmations.current.set(id, resolvePromise);
+    setToasts((current) => [...current, {
+      id,
+      type: "warning",
+      title: toast.title ?? "Perubahan belum disimpan",
+      message: toast.message,
+      confirmText: toast.confirmText ?? "Buang perubahan",
+      cancelText: toast.cancelText ?? "Lanjut mengedit",
+      duration: 0,
+      resolveConfirmation: resolvePromise,
+    }]);
+    return promise;
+  }, []);
+
+  const resolveToastConfirmation = useCallback((id: number, confirmed: boolean) => {
+    const resolve = confirmations.current.get(id);
+    confirmations.current.delete(id);
+    if (activeConfirmation.current?.id === id) activeConfirmation.current = null;
+    removeToast(id);
+    resolve?.(confirmed);
+  }, [removeToast]);
 
   const addToast = useCallback(
     (type: ToastType, toast: ToastInput) => {
@@ -112,8 +157,9 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       removeToast,
       success: (toast) => addToast("success", toast),
       warning: (toast) => addToast("warning", toast),
+      confirm,
     }),
-    [addToast, removeToast]
+    [addToast, confirm, removeToast]
   );
 
   return (
@@ -124,7 +170,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
           <div
             key={toast.id}
             className={`rounded-lg border p-4 shadow-theme-lg ${toastStyles[toast.type]}`}
-            role={toast.type === "error" ? "alert" : "status"}
+            role={toast.resolveConfirmation ? "alertdialog" : toast.type === "error" ? "alert" : "status"}
             aria-atomic="true"
           >
             <div className="flex items-start gap-3">
@@ -143,6 +189,12 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
                 x
               </button>
             </div>
+            {toast.resolveConfirmation && (
+              <div className="mt-3 flex justify-end gap-2">
+                <button type="button" onClick={() => resolveToastConfirmation(toast.id, false)} className="rounded-lg border border-current/25 px-3 py-1.5 text-xs font-semibold hover:bg-black/5 dark:hover:bg-white/5">{toast.cancelText}</button>
+                <button type="button" onClick={() => resolveToastConfirmation(toast.id, true)} className="rounded-lg bg-warning-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-warning-700">{toast.confirmText}</button>
+              </div>
+            )}
           </div>
         ))}
       </div>

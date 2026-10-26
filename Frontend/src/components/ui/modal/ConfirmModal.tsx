@@ -46,7 +46,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           </div>
         </div>
 
-        <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+        <div className="mt-7 flex items-center justify-end gap-3">
           <button
             type="button"
             onClick={onClose}

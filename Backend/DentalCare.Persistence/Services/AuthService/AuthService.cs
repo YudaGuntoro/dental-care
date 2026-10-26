@@ -2,7 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using DentalCare.Domain.Auth;
-using DentalCare.Persistence.Context;
+using DentalCare.Persistence.Repositories;
 using DentalCare.Persistence.Services.Shared;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -12,12 +12,12 @@ namespace DentalCare.Persistence.Services.AuthService;
 
 public class AuthService : IAuthService
 {
-    private readonly DentalCareDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly JwtSettings _jwtSettings;
 
-    public AuthService(DentalCareDbContext db, IOptions<JwtSettings> jwtOptions)
+    public AuthService(IUnitOfWork unitOfWork, IOptions<JwtSettings> jwtOptions)
     {
-        _db = db;
+        _unitOfWork = unitOfWork;
         _jwtSettings = jwtOptions.Value;
     }
 
@@ -29,7 +29,7 @@ public class AuthService : IAuthService
         }
 
         var username = request.Username.Trim();
-        var user = await _db.Users.FirstOrDefaultAsync(x => x.Username == username);
+        var user = await _unitOfWork.Repository<AppUser>().Query().FirstOrDefaultAsync(x => x.Username == username);
         if (user == null || !AuthPasswordHasher.VerifyPassword(request.Password, user.PasswordSalt, user.PasswordHash))
         {
             throw new UnauthorizedAccessException("Invalid username or password.");
@@ -44,7 +44,7 @@ public class AuthService : IAuthService
         var expiresAt = loginAt.AddHours(_jwtSettings.ExpiresHours);
         user.LastLoginAt = loginAt;
         user.UpdatedAt = loginAt;
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
 
         return new LoginResponse
         {

@@ -58,6 +58,7 @@ export const navItems: NavItem[] = [
     subItems: [
       { name: "Ruang Dokter", path: "/doctor" },
       { name: "Pembayaran", path: "/payments" },
+      { name: "Laporan Harian", path: "/reports/daily" },
       { name: "Pengguna", path: "/users" },
     ],
   },

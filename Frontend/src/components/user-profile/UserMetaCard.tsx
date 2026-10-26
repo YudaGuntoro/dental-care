@@ -217,7 +217,7 @@ export default function UserMetaCard() {
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+            <div className="mt-6 flex items-center justify-end gap-3 px-2">
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Close
               </Button>

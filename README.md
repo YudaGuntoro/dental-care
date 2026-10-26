@@ -25,6 +25,20 @@ Dental Care is a clinic management application. The active project remote is `ht
    mysql -u root -p -e "source database/dental_care.sql"
    ```
 
+   For demo data covering the previous seven days through the next three days, run the idempotent appointment seed:
+
+   ```powershell
+   mysql -u root -p dental_care < database/seed_appointments_demo.sql
+   ```
+
+   To populate daily reports for completed demo visits with payment transactions, run this after the appointment seed:
+
+   ```powershell
+   mysql -u root -p dental_care < database/seed_daily_report_demo.sql
+   ```
+
+   Today's scheduled demo appointments also appear in queue control; queue entries are derived from appointments.
+
 2. Configure the API connection string. In PowerShell, set it for the current terminal:
 
    ```powershell

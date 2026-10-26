@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using DentalCare.Domain.Auth;
-using DentalCare.Persistence.Context;
+using DentalCare.Persistence.Repositories;
 using DentalCare.Persistence.Services.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +11,9 @@ namespace DentalCare.WebAPI.Controllers;
 [Route("api/users")]
 public class UsersController : ApiControllerBase
 {
-    private readonly DentalCareDbContext _db;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UsersController(DentalCareDbContext db) => _db = db;
+    public UsersController(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
     [HttpGet]
     public async Task<IActionResult> GetUsers(
@@ -25,7 +25,7 @@ public class UsersController : ApiControllerBase
         page = Math.Max(1, page);
         limit = Math.Clamp(limit, 1, 100);
 
-        var query = _db.Users.AsNoTracking();
+        var query = _unitOfWork.Repository<AppUser>().Query().AsNoTracking();
         if (!string.IsNullOrWhiteSpace(search))
         {
             var keyword = search.Trim();
@@ -69,7 +69,7 @@ public class UsersController : ApiControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetUser(int id)
     {
-        var user = await _db.Users.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        var user = await _unitOfWork.Repository<AppUser>().Query().AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         return user is null ? ApiNotFound("User was not found.") : ApiOk(ToResponse(user));
     }
 
@@ -87,7 +87,7 @@ public class UsersController : ApiControllerBase
             return ApiBadRequest("Password is required.");
         }
 
-        if (await _db.Users.AnyAsync(x => x.Username == request.Username.Trim()))
+        if (await _unitOfWork.Repository<AppUser>().Query().AnyAsync(x => x.Username == request.Username.Trim()))
         {
             return ApiBadRequest("Username is already registered.");
         }
@@ -108,8 +108,8 @@ public class UsersController : ApiControllerBase
             UpdatedAt = now
         };
 
-        _db.Users.Add(user);
-        await _db.SaveChangesAsync();
+        _unitOfWork.Repository<AppUser>().Add(user);
+        await _unitOfWork.SaveChangesAsync();
 
         return ApiCreated(ToResponse(user), "User created successfully.");
     }
@@ -117,7 +117,7 @@ public class UsersController : ApiControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateRequest request)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
+        var user = await _unitOfWork.Repository<AppUser>().Query().FirstOrDefaultAsync(x => x.Id == id);
         if (user is null)
         {
             return ApiNotFound("User was not found.");
@@ -130,7 +130,7 @@ public class UsersController : ApiControllerBase
         }
 
         var username = request.Username.Trim();
-        if (await _db.Users.AnyAsync(x => x.Id != id && x.Username == username))
+        if (await _unitOfWork.Repository<AppUser>().Query().AnyAsync(x => x.Id != id && x.Username == username))
         {
             return ApiBadRequest("Username is already registered.");
         }
@@ -143,21 +143,21 @@ public class UsersController : ApiControllerBase
         user.Status = request.Status;
         user.UpdatedAt = DateTime.Now;
 
-        await _db.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return ApiOk(ToResponse(user), "User updated successfully.");
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        var user = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
+        var user = await _unitOfWork.Repository<AppUser>().Query().FirstOrDefaultAsync(x => x.Id == id);
         if (user is null)
         {
             return ApiNotFound("User was not found.");
         }
 
-        _db.Users.Remove(user);
-        await _db.SaveChangesAsync();
+        _unitOfWork.Repository<AppUser>().Remove(user);
+        await _unitOfWork.SaveChangesAsync();
         return ApiOk(true, "User deleted successfully.");
     }
 

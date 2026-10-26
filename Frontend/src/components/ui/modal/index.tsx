@@ -1,5 +1,6 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
+import { useToast } from "@/context/ToastContext";
 
 interface ModalProps {
   isOpen: boolean;
@@ -18,6 +19,7 @@ export const Modal: React.FC<ModalProps> = ({
   showCloseButton = true, // Default to true for backwards compatibility
   isFullscreen = false,
 }) => {
+  const toast = useToast();
   const modalRef = useRef<HTMLDivElement>(null);
   const initialValuesRef = useRef<string | null>(null);
 
@@ -35,22 +37,22 @@ export const Modal: React.FC<ModalProps> = ({
       .join("|");
   };
 
-  const requestClose = () => {
+  const requestClose = useCallback(async () => {
     const currentValues = getFormValues();
     if (
       initialValuesRef.current !== null &&
       currentValues !== initialValuesRef.current &&
-      !window.confirm("Data yang sudah diisi belum disimpan. Tutup formulir?")
+      !await toast.confirm({ message: "Data yang sudah diisi belum disimpan. Tutup formulir dan buang perubahan?" })
     ) {
       return;
     }
     onClose();
-  };
+  }, [onClose, toast]);
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        requestClose();
+        void requestClose();
       }
     };
 
@@ -68,7 +70,7 @@ export const Modal: React.FC<ModalProps> = ({
     return () => {
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, requestClose]);
 
   useEffect(() => {
     if (isOpen) {
